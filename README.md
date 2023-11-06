@@ -162,6 +162,18 @@ Here we can configure LSP settings in the `configs/lspconfig.lua` file.
 - [nvim-dap-python](https://github.com/mfussenegger/nvim-dap-python)
 - [nvim-dap-ui](https://github.com/rcarriga/nvim-dap-ui)
 
+#### Setting up a Clipboard Provider
+Neovim supports providers for certain functions, namely the clipboard. If running on WSL2, even though the Ubuntu OS you're running comes with [xclip](https://github.com/astrand/xclip)as a provider to "translate" the yank command from (neo)vim to your system clipboard, this won't work on windows, as it's missing some components required to function. Instead, open a Powershell instance (as administrator - via `PS> Start-Process powershell -Verb runAs` and then install `win32yank` via *chocolatey*
+
+```
+choco install win32yank
+```
+
+Start a new ubuntu shell, open neovim and run the health check, via `:checkhealth`. You should now see win32yank listed as the clipboard provider.
+
+Note: Vim clipboard options are configured in neovim via the `lua/core/init.lua` file, under the `opts.clipboard` parameter. This is where the default vim clipboard behavior is changed to "unnamedplus". [See Referece](https://neovim.io/doc/user/provider.html#clipboard)
+
+
 #### Operating NVim and NvChad
 - NVim Cheat Sheet: `[SPACE] c h`
 - Open the File System Viewer with `[CTRL] n`
