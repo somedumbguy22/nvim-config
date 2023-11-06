@@ -171,7 +171,7 @@ choco install win32yank
 
 Start a new ubuntu shell, open neovim and run the health check, via `:checkhealth`. You should now see win32yank listed as the clipboard provider.
 
-Note: Vim clipboard options are configured in neovim via the `lua/core/init.lua` file, under the `opts.clipboard` parameter. This is where the default vim clipboard behavior is changed to "unnamedplus". [See Referece](https://neovim.io/doc/user/provider.html#clipboard)
+Note: Vim clipboard options are configured in neovim via the `lua/core/init.lua` file, under the `opts.clipboard` parameter. This is where the default vim clipboard behavior is changed to "unnamedplus". [See Reference](https://neovim.io/doc/user/provider.html#clipboard)
 
 
 #### Operating NVim and NvChad
