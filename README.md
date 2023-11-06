@@ -205,6 +205,8 @@ Some Useful Buffer Editing commands (from *normal* mode):
 	- Then, `[CTRL] + h, j, k, or l` for moving around various parts of the windows/screen (including the file navigation tree!)
 - Opening the Terminal from NVim
 	- `[SPACE] v` or `[SPACE] h` for a vertical or horizontal window, respectively
+ 		- Note this will create a new terminal session
+	-  `[ALT] h or [ALT] v` hides and restores an existing terminal session (h for your last horizontal session and v for your last vertical session respectively)   
 - Debugging:
 	- `[SPACE] db` to set a breakpoint
 	- `[SPACE] dpr` to run the debugger and execute test cases
