@@ -192,6 +192,7 @@ Some Useful Buffer Editing commands (from *normal* mode):
 	- `d` to cut (delete)
 	- `p` to paste or `P` to paste before the current cursor position 
 - `dd` to delete the current line
+- `yy` to copy the current line
 - `gg` to go to the top of the buffer
 - `G` to go to the end of the buffer
 - `/` to search the current buffer for text (accepts regex)
