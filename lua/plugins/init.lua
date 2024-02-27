@@ -304,5 +304,8 @@ if #config.plugins > 0 then
   table.insert(default_plugins, { import = config.plugins })
 end
 
+-- Added by Aakash - sets relative line numbers by default
+-- iff set to false, to manually enable, run <leader> rn
+vim.wo.relativenumber = true
 
 require("lazy").setup(default_plugins, config.lazy_nvim)
