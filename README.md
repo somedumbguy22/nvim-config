@@ -5,15 +5,12 @@
 	- [General Instructions](https://dev.to/abdfnx/oh-my-zsh-powerlevel10k-cool-terminal-1no0)
 - [FZF - Fuzzy Finder and History Search](https://github.com/junegunn/fzf)
 	- [History Search](https://github.com/joshskidmore/zsh-fzf-history-search)
+- [Inshellisense](https://github.com/microsoft/inshellisense)
 [Installing Fonts on Windows](https://support.microsoft.com/en-us/office/add-a-font-b7c5f17c-4426-4b53-967f-455339c564c1)
 - [Nerd Fonts - Windows](https://www.nerdfonts.com/font-downloads)
 	- [Install a Nerd Font](https://learn.microsoft.com/en-us/windows/terminal/tutorials/custom-prompt-setup)
 - [GH - Github CLI Manager](https://cli.github.com/)
 	- [Installation Instructions for Linux/WSL](https://github.com/cli/cli#installation)
-- [ASDF Version Manager](https://github.com/asdf-vm/asdf)
-	- [Getting Started with ASDF](https://asdf-vm.com/guide/getting-started.html)
-	- [Setting ASDF as ZSH Plugin](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/asdf)
-
 
 # Languages: 
 #### Nodejs
@@ -125,7 +122,7 @@ git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1
 		- This command only works after installing something first (based on my testing)
 examples:
 ```
-:TSInstall exlixir
+:TSInstall elixir
 :TSInstall c_sharp
 :TSInstall rust
 :TSInstall python
@@ -150,6 +147,9 @@ In the `plugins.lua` file is where the config settings for each plugin lives (e.
 Here we can configure LSP settings in the `configs/lspconfig.lua` file.
 - Reference: [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)
 
+#### Elixir LSP
+- [ElixirLS](https://github.com/neovim/nvim-lspconfig/blob/master/lua/lspconfig/server_configurations/elixirls.lua) - Install via Mason.nvim
+
 ##### C# LSP with Omnisharp-Roslyn
 - Not Recommended: Can install [omnisharp-roslyn](https://github.com/OmniSharp/omnisharp-roslyn) by adding the [latest version](https://github.com/OmniSharp/omnisharp-roslyn/releases) 
 - Recommended: Use [Mason.nvim](https://github.com/williamboman/mason.nvim) to add the LSP via their supported [csharp-language-server](https://mason-registry.dev/registry/list#csharp-language-server) package
@@ -161,7 +161,6 @@ Here we can configure LSP settings in the `configs/lspconfig.lua` file.
 - [nvim-dap](https://github.com/mfussenegger/nvim-dap), 
 - [nvim-dap-python](https://github.com/mfussenegger/nvim-dap-python)
 - [nvim-dap-ui](https://github.com/rcarriga/nvim-dap-ui)
-
 #### Setting up a Clipboard Provider
 Neovim supports providers for certain functions, namely the clipboard. If running on WSL2, even though the Ubuntu OS you're running comes with [xclip](https://github.com/astrand/xclip)as a provider to "translate" the yank command from (neo)vim to your system clipboard, this won't work on windows, as it's missing some components required to function. Instead, open a Powershell instance (as administrator - via `PS> Start-Process powershell -Verb runAs` and then install `win32yank` via *chocolatey*
 
@@ -172,11 +171,10 @@ choco install win32yank
 Start a new ubuntu shell, open neovim and run the health check, via `:checkhealth`. You should now see win32yank listed as the clipboard provider.
 
 Note: Vim clipboard options are configured in neovim via the `lua/core/init.lua` file, under the `opts.clipboard` parameter. This is where the default vim clipboard behavior is changed to "unnamedplus". [See Reference](https://neovim.io/doc/user/provider.html#clipboard)
-
-
 #### Operating NVim and NvChad
 - NVim Cheat Sheet: `[SPACE] c h`
 - Open the File System Viewer with `[CTRL] n`
+- Find and Open a file with a preview with `<leader> ff`
 - Some quick commands for File Editing: 
 	- `[SPACE]` is the *leader* key in NVim, and is used to access special NVim commands (separate from the regular vim command palette). This key will also bring up some suggestions on which keys to hit next for certain actions
 	- `m` to mark a file
@@ -186,11 +184,14 @@ Note: Vim clipboard options are configured in neovim via the `lua/core/init.lua`
 	- `d` to delete files (requires a `y/n` confirmation in the command section)
 	- `[SPACE] f f` to open the find files window and you can search for files to open
 	- `[SPACE] f b` will search and only open files that are current open (the `b` is for buffer)
+	- Toggle Relative Line Numbers: `<leader> rn`
 Some Useful Buffer Editing commands (from *normal* mode):
 - `[CTRL-V]` to enter *visual block mode*. You can then highlight a block of text and use the regular vim commands to either copy it or cut it from the buffer
 	- `y` to copy (yank)
 	- `d` to cut (delete)
-	- `p` to paste or `P` to paste before the current cursor position 
+	- `p` to paste or `P` to paste before the current cursor position
+	- `x` to remove multi-line comments (Note: only highlight the comment symbol(s) here i.e., don't highlight the entire line, only the `//` or `#` or whatever)
+	- For multi-line comments: `[SHIFT + i]` (insert mode) -> `//` or `#` or whatever the comment indicator is for the language -> `[ESC]` and it will appear on all lines
 - `dd` to delete the current line
 - `yy` to copy the current line
 - `gg` to go to the top of the buffer
@@ -205,10 +206,48 @@ Some Useful Buffer Editing commands (from *normal* mode):
 		- `[SPACE] x`  or `:(w)q` to close a specific active window, or any normal vim command will apply to the active buffer only
 	- Then, `[CTRL] + h, j, k, or l` for moving around various parts of the windows/screen (including the file navigation tree!)
 - Opening the Terminal from NVim
-	- `[SPACE] v` or `[SPACE] h` for a vertical or horizontal window, respectively
- 		- Note this will create a new terminal session
-	-  `[ALT] h or [ALT] v` hides and restores an existing terminal session (h for your last horizontal session and v for your last vertical session respectively)   
+	- `[SPACE] v` or `[SPACE] h` for a vertical or horizontal window, respectively. 
+		- Note this will create a new terminal session
+	-  `[ALT] h or [ALT] v` hides and restores an existing terminal session (h for your last horizontal session and v for your last vertical session respectively)
 - Debugging:
 	- `[SPACE] db` to set a breakpoint
 	- `[SPACE] dpr` to run the debugger and execute test cases
 	These commands are custom configured in the `custom/mappings.lua` file
+
+# VS Code - Editor
+
+### Themes
+- [Henna Color Theme](https://marketplace.visualstudio.com/items?itemName=httpsterio.henna)
+- [Terminal Font (Matches Powershell10k)](https://github.com/romkatv/powerlevel10k/blob/master/font.md)
+
+### Extensions
+#### C Sharp/.NET
+ - [.NET Core Test](https://marketplace.visualstudio.com/items?itemName=formulahendry.dotnet-test-explorer)
+ - [.NET Install Tool for Extension Authors](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.vscode-dotnet-runtime)
+ - [C#](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csharp)
+ - [Dotnet Core Essentials](https://marketplace.visualstudio.com/items?itemName=kishoreithadi.dotnet-core-essentials)
+ - [ilspy-vscode](https://marketplace.visualstudio.com/items?itemName=icsharpcode.ilspy-vscode)
+ - [MSBuild project tools](https://marketplace.visualstudio.com/items?itemName=tintoy.msbuild-project-tools)
+ - [Phoenix Framework](https://marketplace.visualstudio.com/items?itemName=phoenixframework.phoenix)
+
+#### Rust Lang
+- [Rust](https://github.com/editor-rs/vscode-rust)
+
+#### Elixir + Phoenix
+- [Elixir Test](https://marketplace.visualstudio.com/items?itemName=samuel-pordeus.elixir-test)
+- [ElixirLS: Elixir support and debugger](https://marketplace.visualstudio.com/items?itemName=JakeBecker.elixir-ls)
+
+#### Other
+- [GitLens — Git supercharged](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
+- [Jupyter](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyterc)
+- [Jupyter Cell Tags](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.vscode-jupyter-cell-tags)
+- [Jupyter Keymap](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter-keymap)
+- [Jupyter Notebook Renderers](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter-renderers)
+- [Jupyter Slide Show](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.vscode-jupyter-slideshow)
+- [Polyglot Notebooks](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.dotnet-interactive-vscode)
+- [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
+- [vscode-icons](https://marketplace.visualstudio.com/items?itemName=vscode-icons-team.vscode-icons)
+- [WSL](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl)
+
+# Other
+- [PostgreSQL](https://learn.microsoft.com/en-us/windows/wsl/tutorials/wsl-database)
