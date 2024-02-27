@@ -8,7 +8,7 @@ local plugins = {
   },
   {
     "jose-elias-alvarez/null-ls.nvim",
-    ft = {"python"},
+    ft = {"python", "elixir"},
     opts = function()
       return require "custom.configs.null-ls"
     end,
@@ -60,6 +60,7 @@ local plugins = {
         "ruff",
         "black",
         "debugpy",
+        "elixir-ls",
       },
     },
   },

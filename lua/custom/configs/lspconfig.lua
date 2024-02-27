@@ -3,6 +3,12 @@ local capabilities = require("plugins.configs.lspconfig").capabilities
 
 local lspconfig = require ("lspconfig")
 
+lspconfig.elixirls.setup({
+  on_attach = on_attach,
+  capabilities = capabilities,
+  filetypes = {"ex", "exs"},
+})
+
 lspconfig.pyright.setup({
   on_attach = on_attach,
   capabilities = capabilities,
