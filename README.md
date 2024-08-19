@@ -1,3 +1,5 @@
+This is the initial configuration I did for nvim v0.9.1 and for NvChat 2.0. Please see the most current branch for up to date configurations
+
 # Shell Setup
 - [MS PowerToys](https://learn.microsoft.com/en-us/windows/powertoys/)
 - [ZSH + Powershell10K]()
