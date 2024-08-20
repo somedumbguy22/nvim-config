@@ -1,271 +1,127 @@
--- All plugins have lazy=true by default,to load a plugin on startup just lazy=false
--- List of all default plugins & their definitions
-local default_plugins = {
-
-  "nvim-lua/plenary.nvim",
-
-  -- nvchad plugins
-  { "NvChad/extensions", branch = "v2.0" },
-
+return {
   {
-    "NvChad/base46",
-    branch = "v2.0",
-    build = function()
-      require("base46").load_all_highlights()
-    end,
+    "stevearc/conform.nvim",
+    event = 'BufWritePre', -- uncomment for format on save
+    opts = require "configs.conform",
   },
 
+  -- I overwrote the default NVChad config here and added a new nvimtree.lua file with custom config
   {
-    "NvChad/ui",
-    branch = "v2.0",
-    lazy = false,
+    "nvim-tree/nvim-tree.lua",
+    cmd = { "NvimTreeToggle", "NvimTreeFocus" },
+    opts = function()
+      return require "configs.nvimtree"
+    end
+  },
+  -- These are some examples, uncomment them if you want to see them work!
+  {
+    "neovim/nvim-lspconfig",
     config = function()
-      require "nvchad_ui"
-    end,
-  },
-
-  {
-    "NvChad/nvterm",
-    init = function()
-      require("core.utils").load_mappings "nvterm"
-    end,
-    config = function(_, opts)
-      require "base46.term"
-      require("nvterm").setup(opts)
-    end,
-  },
-
-  {
-    "NvChad/nvim-colorizer.lua",
-    init = function()
-      require("core.utils").lazy_load "nvim-colorizer.lua"
-    end,
-    config = function(_, opts)
-      require("colorizer").setup(opts)
-
-      -- execute colorizer as soon as possible
-      vim.defer_fn(function()
-        require("colorizer").attach_to_buffer(0)
-      end, 0)
-    end,
-  },
-
-  {
-    "nvim-tree/nvim-web-devicons",
-    opts = function()
-      return { override = require("nvchad_ui.icons").devicons }
-    end,
-    config = function(_, opts)
-      dofile(vim.g.base46_cache .. "devicons")
-      require("nvim-web-devicons").setup(opts)
-    end,
-  },
-
-  {
-    "lukas-reineke/indent-blankline.nvim",
-    init = function()
-      require("core.utils").lazy_load "indent-blankline.nvim"
-    end,
-    opts = function()
-      return require("plugins.configs.others").blankline
-    end,
-    config = function(_, opts)
-      require("core.utils").load_mappings "blankline"
-      dofile(vim.g.base46_cache .. "blankline")
-      require("indent_blankline").setup(opts)
+      require "configs.lspconfig"
     end,
   },
 
   {
     "nvim-treesitter/nvim-treesitter",
-    init = function()
-      require("core.utils").lazy_load "nvim-treesitter"
-    end,
-    cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
-    build = ":TSUpdate",
-    opts = function()
-      return require "plugins.configs.treesitter"
-    end,
-    config = function(_, opts)
-      dofile(vim.g.base46_cache .. "syntax")
-      require("nvim-treesitter.configs").setup(opts)
-    end,
-  },
-
-  -- git stuff
-  {
-    "lewis6991/gitsigns.nvim",
-    ft = { "gitcommit", "diff" },
-    init = function()
-      -- load gitsigns only when a git file is opened
-      vim.api.nvim_create_autocmd({ "BufRead" }, {
-        group = vim.api.nvim_create_augroup("GitSignsLazyLoad", { clear = true }),
-        callback = function()
-          vim.fn.system("git -C " .. '"' .. vim.fn.expand "%:p:h" .. '"' .. " rev-parse")
-          if vim.v.shell_error == 0 then
-            vim.api.nvim_del_augroup_by_name "GitSignsLazyLoad"
-            vim.schedule(function()
-              require("lazy").load { plugins = { "gitsigns.nvim" } }
-            end)
-          end
-        end,
-      })
-    end,
-    opts = function()
-      return require("plugins.configs.others").gitsigns
-    end,
-    config = function(_, opts)
-      dofile(vim.g.base46_cache .. "git")
-      require("gitsigns").setup(opts)
-    end,
-  },
-
-  -- lsp stuff
-  {
-    "williamboman/mason.nvim",
-    cmd = { "Mason", "MasonInstall", "MasonInstallAll", "MasonUninstall", "MasonUninstallAll", "MasonLog" },
-    opts = function()
-      return require "plugins.configs.mason"
-    end,
-    config = function(_, opts)
-      dofile(vim.g.base46_cache .. "mason")
-      require("mason").setup(opts)
-
-      -- custom nvchad cmd to install all mason binaries listed
-      vim.api.nvim_create_user_command("MasonInstallAll", function()
-        vim.cmd("MasonInstall " .. table.concat(opts.ensure_installed, " "))
-      end, {})
-
-      vim.g.mason_binaries_list = opts.ensure_installed
-    end,
+    opts = {
+      ensure_installed = {
+        "lua", "elixir", "html", "css", "json", "yaml", "eex", "heex"
+      },
+    },
   },
 
   {
-    "neovim/nvim-lspconfig",
-    init = function()
-      require("core.utils").lazy_load "nvim-lspconfig"
-    end,
-    config = function()
-      require "plugins.configs.lspconfig"
-    end,
-  },
-
-  -- load luasnips + cmp related in insert mode only
-  {
-    "hrsh7th/nvim-cmp",
-    event = "InsertEnter",
+    "mfussenegger/nvim-dap",
     dependencies = {
+      "rcarriga/nvim-dap-ui",
       {
-        -- snippet plugin
-        "L3MON4D3/LuaSnip",
-        dependencies = "rafamadriz/friendly-snippets",
-        opts = { history = true, updateevents = "TextChanged,TextChangedI" },
-        config = function(_, opts)
-          require("plugins.configs.others").luasnip(opts)
-        end,
-      },
-
-      -- autopairing of (){}[] etc
-      {
-        "windwp/nvim-autopairs",
-        opts = {
-          fast_wrap = {},
-          disable_filetype = { "TelescopePrompt", "vim" },
-        },
-        config = function(_, opts)
-          require("nvim-autopairs").setup(opts)
-
-          -- setup cmp for autopairs
-          local cmp_autopairs = require "nvim-autopairs.completion.cmp"
-          require("cmp").event:on("confirm_done", cmp_autopairs.on_confirm_done())
-        end,
-      },
-
-      -- cmp sources plugins
-      {
-        "saadparwaiz1/cmp_luasnip",
-        "hrsh7th/cmp-nvim-lua",
-        "hrsh7th/cmp-nvim-lsp",
-        "hrsh7th/cmp-buffer",
-        "hrsh7th/cmp-path",
+        "theHamsta/nvim-dap-virtual-text",
+        opts = {},
       },
     },
-    opts = function()
-      return require "plugins.configs.cmp"
-    end,
-    config = function(_, opts)
-      require("cmp").setup(opts)
-    end,
-  },
-
-  {
-    "numToStr/Comment.nvim",
     keys = {
-      { "gcc", mode = "n" },
-      { "gc", mode = "v" },
-      { "gbc", mode = "n" },
-      { "gb", mode = "v" },
+      { "<leader>d",  "",                                                                                   desc = "+debug",                 mode = { "n", "v" } },
+      { "<leader>dB", function() require("dap").set_breakpoint(vim.fn.input('Breakpoint condition: ')) end, desc = "Breakpoint Condition" },
+      { "<leader>db", function() require("dap").toggle_breakpoint() end,                                    desc = "Toggle Breakpoint" },
+      { "<leader>dc", function() require("dap").continue() end,                                             desc = "Continue" },
+      { "<leader>da", function() require("dap").continue({ before = get_args }) end,                        desc = "Run with Args" },
+      { "<leader>dC", function() require("dap").run_to_cursor() end,                                        desc = "Run to Cursor" },
+      { "<leader>dg", function() require("dap").goto_() end,                                                desc = "Go to Line (No Execute)" },
+      { "<leader>di", function() require("dap").step_into() end,                                            desc = "Step Into" },
+      { "<leader>dj", function() require("dap").down() end,                                                 desc = "Down" },
+      { "<leader>dk", function() require("dap").up() end,                                                   desc = "Up" },
+      { "<leader>dl", function() require("dap").run_last() end,                                             desc = "Run Last" },
+      { "<leader>do", function() require("dap").step_out() end,                                             desc = "Step Out" },
+      { "<leader>dO", function() require("dap").step_over() end,                                            desc = "Step Over" },
+      { "<leader>dp", function() require("dap").pause() end,                                                desc = "Pause" },
+      { "<leader>dr", function() require("dap").repl.toggle() end,                                          desc = "Toggle REPL" },
+      { "<leader>ds", function() require("dap").session() end,                                              desc = "Session" },
+      { "<leader>dt", function() require("dap").terminate() end,                                            desc = "Terminate" },
+      { "<leader>dw", function() require("dap.ui.widgets").hover() end,                                     desc = "Widgets" },
     },
-    init = function()
-      require("core.utils").load_mappings "comment"
-    end,
-    config = function(_, opts)
-      require("Comment").setup(opts)
+    config = function()
+      local dap = require("dap")
+
+      dap.adapters.mix_task = {
+        type = 'executable',
+        command = '/home/aakash/.local/share/nvim/mason/packages/elixir-ls/debug_adapter.sh', -- debug_adapter.bat for windows
+        args = {}
+      }
+
+      dap.configurations.elixir = {
+        {
+          type = "mix_task",
+          name = "mix test",
+          task = 'test',
+          taskArgs = { "--trace" },
+          request = "launch",
+          startApps = true, -- for Phoenix projects
+          projectDir = "${workspaceFolder}",
+          requireFiles = {
+            "test/**/test_helper.exs",
+            "test/**/*_test.exs"
+          }
+        },
+      }
     end,
   },
 
-  -- file managing , picker etc
   {
-    "nvim-tree/nvim-tree.lua",
-    cmd = { "NvimTreeToggle", "NvimTreeFocus" },
-    init = function()
-      require("core.utils").load_mappings "nvimtree"
+    "theHamsta/nvim-dap-virtual-text",
+    config = function()
+      require("nvim-dap-virtual-text").setup()
     end,
-    opts = function()
-      return require "plugins.configs.nvimtree"
-    end,
-    config = function(_, opts)
-      dofile(vim.g.base46_cache .. "nvimtree")
-      require("nvim-tree").setup(opts)
-      vim.g.nvimtree_side = opts.view.side
-    end,
+    requires = { "mfussenegger/nvim-dap" },
   },
 
   {
-    "nvim-telescope/telescope.nvim",
-    cmd = "Telescope",
-    init = function()
-      require("core.utils").load_mappings "telescope"
-    end,
-    opts = function()
-      return require "plugins.configs.telescope"
-    end,
+    "rcarriga/nvim-dap-ui",
+    dependencies = { "nvim-neotest/nvim-nio" },
+    keys = {
+      { "<leader>du", function() require("dapui").toggle({}) end, desc = "Dap UI" },
+      { "<leader>de", function() require("dapui").eval() end,     desc = "Eval",  mode = { "n", "v" } },
+    },
+    opts = {},
     config = function(_, opts)
-      dofile(vim.g.base46_cache .. "telescope")
-      local telescope = require "telescope"
-      telescope.setup(opts)
-
-      -- load extensions
-      for _, ext in ipairs(opts.extensions_list) do
-        telescope.load_extension(ext)
+      local dap = require("dap")
+      local dapui = require("dapui")
+      dapui.setup(opts)
+      dap.listeners.after.event_initialized["dapui_config"] = function()
+        dapui.open({})
+      end
+      dap.listeners.before.event_terminated["dapui_config"] = function()
+        dapui.close({})
+      end
+      dap.listeners.before.event_exited["dapui_config"] = function()
+        dapui.close({})
       end
     end,
   },
 
-  -- Only load whichkey after all the gui
   {
-    "folke/which-key.nvim",
-    keys = { "<leader>", '"', "'", "`", "c", "v" },
-    init = function()
-      require("core.utils").load_mappings "whichkey"
-    end,
-    config = function(_, opts)
-      dofile(vim.g.base46_cache .. "whichkey")
-      require("which-key").setup(opts)
-    end,
+    "nvim-neotest/nvim-nio"
   },
 
-  -- Elixir Stuff (added by Aakash)
   {
     "elixir-tools/elixir-tools.nvim",
     version = "*",
@@ -273,22 +129,33 @@ local default_plugins = {
     config = function()
       local elixir = require("elixir")
       local elixirls = require("elixir.elixirls")
+      require("nvchad.configs.lspconfig").defaults()
+      local nvlsp = require "nvchad.configs.lspconfig"
+      -- local map = vim.keymap.set
 
       elixir.setup {
-        nextls = {enable = true},
-        credo = {enable = true},
+        -- nextls = {
+        --   enable = true,
+        --   cmd = "/home/aakash/.local/share/nvim/mason/packages/nextls/next_ls_linux_amd64",
+        -- },
         elixirls = {
           enable = true,
           cmd = { "/home/aakash/.local/share/nvim/mason/packages/elixir-ls/language_server.sh" },
+          filetypes = { "ex", "eex" },
           settings = elixirls.settings {
             dialyzerEnabled = true,
             enableTestLenses = false,
+            fetchDeps = false,
+            -- suggestSpecs = false,
           },
-          on_attach = function(client, bufnr)
-            vim.keymap.set("n", "<space>fp", ":ElixirFromPipe<cr>", { buffer = true, noremap = true })
-            vim.keymap.set("n", "<space>tp", ":ElixirToPipe<cr>", { buffer = true, noremap = true })
-            vim.keymap.set("v", "<space>em", ":ElixirExpandMacro<cr>", { buffer = true, noremap = true })
-          end,
+          on_attach = nvlsp.on_attach,
+          on_init = nvlsp.on_init,
+          capabilities = nvlsp.capabilities,
+          -- on_attach = function(client, bufnr)
+          --   map("n", "<space>fp", ":ElixirFromPipe<cr>", { buffer = true, noremap = true })
+          --   map("n", "<space>tp", ":ElixirToPipe<cr>", { buffer = true, noremap = true })
+          --   map("v", "<space>em", ":ElixirExpandMacro<cr>", { buffer = true, noremap = true })
+          -- end,
         }
       }
     end,
@@ -297,15 +164,3 @@ local default_plugins = {
     },
   },
 }
-
-local config = require("core.utils").load_config()
-
-if #config.plugins > 0 then
-  table.insert(default_plugins, { import = config.plugins })
-end
-
--- Added by Aakash - sets relative line numbers by default
--- iff set to false, to manually enable, run <leader> rn
-vim.wo.relativenumber = true
-
-require("lazy").setup(default_plugins, config.lazy_nvim)
