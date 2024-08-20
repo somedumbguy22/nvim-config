@@ -1,8 +1,5 @@
 local options = {
-  filters = {
-    dotfiles = false,
-    exclude = { vim.fn.stdpath "config" .. "/lua/custom" },
-  },
+  filters = { dotfiles = false },
   disable_netrw = true,
   hijack_netrw = true,
   hijack_cursor = true,
@@ -44,7 +41,7 @@ local options = {
         file = true,
         folder = true,
         folder_arrow = true,
-        git = false,
+        git = true,
       },
 
       glyphs = {
