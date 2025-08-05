@@ -15,6 +15,30 @@ This version of the config is for neovim 0.10.0 and NvChad 2.5
 
 # Languages: 
 #### Nodejs
+**Updated**: Use [nvm](https://github.com/nvm-sh/nvm) to install and manage node
+
+```shell
+sudo apt-get update
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/<version>/install.sh | bash
+# This automatically adds the following to your .zshrc (or bash) profile
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# To verify installation
+command -v nvm
+
+#Install node.js
+nvm install node # "node" is an alias for the latest version
+nvm install 14.7.0 # or 16.3.0, 12.22.1, etc
+nvm alias my_alias v14.4.0
+
+nvm run node --version
+
+nvm install-latest-npm
+```
+
+**Outdated:**
 {Required for IDE setup}
 There's a WSL bug and you need to install node from the source binary. [Instructions](https://github.com/nodesource/distributions)
 ```
