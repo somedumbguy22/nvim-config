@@ -409,7 +409,7 @@ Then, run:
 
 ```shell
 > npm install -g @google/gemini-cli
-
+> npm list -g --depth=0 --json
 > gemini
 ```
 
