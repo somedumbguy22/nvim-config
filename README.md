@@ -390,3 +390,55 @@ Some Useful Buffer Editing commands (starting from *normal* mode):
 
 # Other
 - [PostgreSQL](https://learn.microsoft.com/en-us/windows/wsl/tutorials/wsl-database)
+
+# AI CLI Interface Setup
+I'll be using [Gemini CLI](https://github.com/google-gemini/gemini-cli) for my workflow. To get started:
+
+Navigate to the [Google Cloud Console](https://console.cloud.google.com/) and create (or use an existing) project to house your [AI Studio](https://aistudio.google.com/) [API Key](https://aistudio.google.com/apikey)
+
+> Note: Consider setting [Billing Alerts](https://console.cloud.google.com/billing) for this (or all of your projects) to ensure you're notified about spending
+
+Once you have created your API key, set it in your bash profile by adding the following to your `.zshrc` or equivalent $PROFILE
+
+```shell
+#Gemini CLI API Key
+export GEMINI_API_KEY="<your_api_key>"
+```
+
+Then, run:
+
+```shell
+> npm install -g @google/gemini-cli
+
+> gemini
+```
+
+# WSL Notes
+Doing a backup-restore in WSL is very easy and creates a tar file. So take a backup, try do-release-upgrade, and if it fails restore your older system.
+
+1. From Powershell shutdown WSL
+
+`wsl --shutdown`
+
+2. Get name of WSL instance:
+
+`wsl -l`
+
+3. Export the instance:
+
+`wsl --export {instance name} {full path to backup}`
+example: `wsl --export Ubuntu-20.04 c:/WSLNew/Ubuntu-2024-06-09.tar` 
+
+To restore the back up
+
+1. Shutdown WSL
+    
+
+`wsl --shutdown`
+
+2. Restore the backup
+
+`wsl --import {instance name} {full path to backup}`
+example: `wsl --import Ubuntu-20.04 c:/WSLNew/Ubuntu-2024-06-09.tar `
+
+That is all there is to it! [Reference](https://www.reddit.com/r/Ubuntu/comments/1c648b0/upgrade_to_ubuntu_2404_from_2204_terminal_vs/)
